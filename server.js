@@ -1,14 +1,42 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const { exec } = require("child_process");
 
 // Get port from environment or use 3000 locally
 const PORT = process.env.PORT || 3000;
 
+// Persistent volume paths
+const csvFile = "/data/purchases.csv";
+const txtFile = "/data/data.txt";
+
+// Ensure /data directory exists (in case volume isn't mounted yet)
+if (!fs.existsSync("/data")) {
+  fs.mkdirSync("/data", { recursive: true });
+}
+
 // Initialize CSV file with headers if it doesn't exist
-const csvFile = "purchases.csv";
 if (!fs.existsSync(csvFile)) {
   fs.writeFileSync(csvFile, "Timestamp,Customer,Items,Original Total,Discount,Final Price,Behavioral Weight,Session Duration (seconds),Session Duration (minutes)\n");
+}
+
+// Push the updated CSV to GitHub asynchronously
+function pushToGitHub() {
+  const gitCommands = [
+    'git config user.email "bot@coupon-simulation-hub.railway.app"',
+    'git config user.name "Coupon Simulation Bot"',
+    `git add "${csvFile}"`,
+    'git diff --cached --quiet || git commit -m "Update purchases log"',
+    'git push'
+  ].join(' && ');
+
+  exec(gitCommands, { shell: '/bin/sh' }, (err, stdout, stderr) => {
+    if (err) {
+      console.error("Git push failed (non-fatal):", stderr || err.message);
+    } else {
+      console.log("Git push succeeded:", stdout.trim() || "(no output)");
+    }
+  });
 }
 
 http.createServer((req,res)=>{
@@ -37,10 +65,14 @@ let csvLine = `"${timestamp}","${data.user}","${data.items}",${data.total},${dat
 let txtLine = `${data.user},${data.total},${data.discount},${data.final},${data.weight},${data.time},${sessionSeconds}s/${sessionMinutes}min\n`;
 
 fs.appendFileSync(csvFile, csvLine);
-fs.appendFileSync("data.txt", txtLine);
+fs.appendFileSync(txtFile, txtLine);
 
+// Respond immediately — git push runs in the background
 res.writeHead(200);
 res.end("logged");
+
+// Async: commit and push CSV to GitHub
+pushToGitHub();
 
 });
 
@@ -55,4 +87,4 @@ fs.createReadStream("index.html").pipe(res);
 });
 
 console.log("Server running: http://localhost:3000");
-console.log("Purchases logging to: purchases.csv and data.txt");
+console.log(`Purchases logging to: ${csvFile} and ${txtFile}`);
