@@ -68,6 +68,10 @@ http.createServer((req, res) => {
       fs.appendFileSync(csvFile, csvLine);
       fs.appendFileSync(txtFile, txtLine);
 
+      // Log to Railway deploy logs (visible in Railway dashboard)
+      const itemsSummary = data.items || "(no items)";
+      console.log(`PURCHASE: ${data.user} | Items: ${itemsSummary} | Total: ${data.total} | Discount: ${data.discount} | Final: ${data.final}`);
+
       // Sync CSV to GitHub in the background
       pushToGitHub();
 
@@ -192,6 +196,55 @@ http.createServer((req, res) => {
 
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(html);
+    return;
+  }
+
+  // ── GET /logs-data ── return CSV as JSON for the website's logs table
+  if (req.method === "GET" && req.url === "/logs-data") {
+    res.writeHead(200, {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    });
+
+    if (!fs.existsSync(csvFile)) {
+      res.end(JSON.stringify({ headers: [], rows: [] }));
+      return;
+    }
+
+    const raw = fs.readFileSync(csvFile, "utf8");
+    const lines = raw.trim().split("\n").filter(l => l.trim() !== "");
+
+    if (lines.length < 1) {
+      res.end(JSON.stringify({ headers: [], rows: [] }));
+      return;
+    }
+
+    // Parse CSV line, handling quoted fields correctly
+    function parseCSVLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          inQuotes = !inQuotes;
+        } else if (ch === "," && !inQuotes) {
+          result.push(current.trim());
+          current = "";
+        } else {
+          current += ch;
+        }
+      }
+      result.push(current.trim());
+      return result;
+    }
+
+    const headers = parseCSVLine(lines[0]);
+    // Return last 20 rows, most recent first
+    const allRows = lines.slice(1).map(parseCSVLine);
+    const rows = allRows.slice(-20).reverse();
+
+    res.end(JSON.stringify({ headers, rows }));
     return;
   }
 

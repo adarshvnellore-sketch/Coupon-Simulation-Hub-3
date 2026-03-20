@@ -127,8 +127,130 @@ background:rgba(0,150,255,.1);
 padding:10px;
 border-radius:6px;
 }
+
+/* ── Purchase Logs Section ── */
+.logs-section{
+margin:24px 20px;
+background:var(--card);
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.12);
+padding:20px;
+}
+
+.logs-section h2{
+margin:0 0 4px 0;
+font-size:20px;
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.logs-meta{
+font-size:12px;
+color:#888;
+margin-bottom:14px;
+}
+
+.logs-actions{
+display:flex;
+gap:10px;
+margin-bottom:16px;
+flex-wrap:wrap;
+align-items:center;
+}
+
+.logs-btn{
+padding:7px 14px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+font-size:13px;
+font-weight:bold;
+text-decoration:none;
+display:inline-block;
+}
+
+.logs-btn-csv{ background:#FFD814; color:#111; }
+.logs-btn-txt{ background:#FFA41C; color:#111; }
+.logs-btn-csv:hover{ background:#f0c800; }
+.logs-btn-txt:hover{ background:#e8920a; }
+
+.logs-refresh-indicator{
+font-size:12px;
+color:#888;
+margin-left:auto;
+}
+
+.logs-table-wrap{
+overflow-x:auto;
+}
+
+.logs-table{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
+}
+
+.logs-table thead tr{
+background:#131921;
+color:#FFA41C;
+}
+
+body.dark .logs-table thead tr{
+background:#000;
+}
+
+.logs-table th{
+padding:10px 12px;
+text-align:left;
+white-space:nowrap;
+font-weight:bold;
+letter-spacing:.3px;
+}
+
+.logs-table td{
+padding:9px 12px;
+border-bottom:1px solid rgba(0,0,0,0.07);
+white-space:nowrap;
+}
+
+body.dark .logs-table td{
+border-bottom:1px solid rgba(255,255,255,0.07);
+}
+
+.logs-table tbody tr:last-child td{ border-bottom:none; }
+.logs-table tbody tr:nth-child(even) td{ background:rgba(0,0,0,0.03); }
+body.dark .logs-table tbody tr:nth-child(even) td{ background:rgba(255,255,255,0.04); }
+.logs-table tbody tr:hover td{ background:rgba(255,164,28,0.1); }
+
+.logs-empty{
+text-align:center;
+padding:30px;
+color:#aaa;
+font-size:14px;
+}
+
+.logs-badge-discount{
+color:#c7511f;
+font-weight:bold;
+}
+
+.logs-badge-final{
+color:#007600;
+font-weight:bold;
+}
+
+body.dark .logs-badge-final{ color:#4caf50; }
+body.dark .logs-badge-discount{ color:#ff8c42; }
+
+.logs-count{
+margin-top:10px;
+font-size:12px;
+color:#888;
+}
 </style>
 </head>
+
 
 <body>
 
@@ -163,7 +285,42 @@ Smart Coupon Store Pro
 </div>
 </div>
 
+<!-- PURCHASE LOGS SECTION -->
+<div class="logs-section">
+
+<h2>&#x1F4CB; Recent Purchases</h2>
+<p class="logs-meta">Showing the last 20 purchases &mdash; auto-refreshes every 5 seconds. <span id="logsLastUpdated"></span></p>
+
+<div class="logs-actions">
+<a class="logs-btn logs-btn-csv" href="/logs" download>&#x2B07; Download CSV</a>
+<a class="logs-btn logs-btn-txt" href="/logs-txt" download>&#x2B07; Download TXT</a>
+<span class="logs-refresh-indicator" id="logsRefreshIndicator">&#x1F504; Refreshing&hellip;</span>
+</div>
+
+<div class="logs-table-wrap">
+<table class="logs-table" id="logsTable">
+<thead>
+<tr>
+<th>Timestamp</th>
+<th>Customer</th>
+<th>Items</th>
+<th>Original Total</th>
+<th>Discount</th>
+<th>Final Price</th>
+</tr>
+</thead>
+<tbody id="logsTableBody">
+<tr><td colspan="6" class="logs-empty">Loading purchases&hellip;</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="logs-count" id="logsCount"></p>
+
+</div>
+
 <!-- ADMIN PANEL -->
+
 <div class="admin" id="adminPanel">
 
 <div id="adminHeader" style="cursor:move;font-weight:bold;margin-bottom:8px;">
@@ -523,8 +680,95 @@ document.onmousemove=null;
 
 renderProducts();
 
+// ── Purchase Logs: fetch from /logs-data and render table ──
+
+function formatTimestamp(ts) {
+  if (!ts) return "";
+  try {
+    const d = new Date(ts);
+    if (isNaN(d)) return ts;
+    return d.toLocaleString();
+  } catch(e) { return ts; }
+}
+
+// Column indices in the CSV we care about (by header name)
+const LOG_COLS = {
+  timestamp: "Timestamp",
+  customer:  "Customer",
+  items:     "Items",
+  total:     "Original Total",
+  discount:  "Discount",
+  final:     "Final Price"
+};
+
+function findColIndex(headers, name) {
+  return headers.findIndex(h => h.trim().toLowerCase() === name.toLowerCase());
+}
+
+function renderLogsTable(data) {
+  const tbody = document.getElementById("logsTableBody");
+  const countEl = document.getElementById("logsCount");
+  const indicator = document.getElementById("logsRefreshIndicator");
+
+  if (!data || !data.rows || data.rows.length === 0) {
+    tbody.innerHTML = "<tr><td colspan=\"6\" class=\"logs-empty\">No purchases recorded yet. Make a checkout to see logs here!</td></tr>";
+    if (countEl) countEl.textContent = "";
+    if (indicator) indicator.textContent = "✔ Up to date";
+    return;
+  }
+
+  const headers = data.headers || [];
+  const idxTimestamp = findColIndex(headers, LOG_COLS.timestamp);
+  const idxCustomer  = findColIndex(headers, LOG_COLS.customer);
+  const idxItems     = findColIndex(headers, LOG_COLS.items);
+  const idxTotal     = findColIndex(headers, LOG_COLS.total);
+  const idxDiscount  = findColIndex(headers, LOG_COLS.discount);
+  const idxFinal     = findColIndex(headers, LOG_COLS.final);
+
+  let html = "";
+  data.rows.forEach(function(row) {
+    const ts       = idxTimestamp >= 0 ? formatTimestamp(row[idxTimestamp]) : "";
+    const customer = idxCustomer  >= 0 ? row[idxCustomer]  : "";
+    const items    = idxItems     >= 0 ? row[idxItems]     : "";
+    const total    = idxTotal     >= 0 ? "$" + parseFloat(row[idxTotal] || 0).toFixed(2)    : "";
+    const discount = idxDiscount  >= 0 ? "-$" + parseFloat(row[idxDiscount] || 0).toFixed(2) : "";
+    const final    = idxFinal     >= 0 ? "$" + parseFloat(row[idxFinal] || 0).toFixed(2)    : "";
+
+    html += "<tr>" +
+      "<td>" + ts + "</td>" +
+      "<td>" + customer + "</td>" +
+      "<td>" + items + "</td>" +
+      "<td>" + total + "</td>" +
+      "<td class=\"logs-badge-discount\">" + discount + "</td>" +
+      "<td class=\"logs-badge-final\">" + final + "</td>" +
+      "</tr>";
+  });
+
+  tbody.innerHTML = html;
+  if (countEl) countEl.textContent = data.rows.length + " record(s) shown (most recent first).";
+  if (indicator) indicator.textContent = "✔ Updated " + new Date().toLocaleTimeString();
+}
+
+function fetchLogs() {
+  const indicator = document.getElementById("logsRefreshIndicator");
+  if (indicator) indicator.textContent = "🔄 Refreshing…";
+
+  fetch("/logs-data")
+    .then(function(r) { return r.json(); })
+    .then(function(data) { renderLogsTable(data); })
+    .catch(function(err) {
+      console.error("Logs fetch error:", err);
+      const tbody = document.getElementById("logsTableBody");
+      if (tbody) tbody.innerHTML = "<tr><td colspan=\"6\" class=\"logs-empty\">Could not load logs. Will retry shortly.</td></tr>";
+      if (indicator) indicator.textContent = "⚠ Fetch failed";
+    });
+}
+
+// Initial load + auto-refresh every 5 seconds
+fetchLogs();
+setInterval(fetchLogs, 5000);
+
 </script>
 
 </body>
-</html>
 </html>
