@@ -1,0 +1,31 @@
+Timestamp,Customer,Items,Original Total,Discount,Final Price,Behavioral Weight,Session Duration (seconds),Session Duration (minutes)
+"2026-03-20T01:19:56.771Z","Customer_m29jj6dme","Smartwatch x2, Tablet x1",1050.00,34.00,1016.00,27.7,3,0.05
+"2026-03-20T01:20:17.157Z","Customer_24lyge9x4","Smartwatch x2, Tablet x1",1050.00,34.00,1016.00,24.0,23,0.38
+"2026-03-20T01:20:32.282Z","Customer_4cirfks8f","Laptop x1, Adarsh x5, Smartwatch x2, Tablet x1",2110.00,2.00,2108.00,27.0,38,0.63
+"2026-03-20T01:32:37.825Z","Customer_y9vwiblzv","Smartwatch x3, Tablet x1",1350.00,32.00,1318.00,27.7,12,0.20
+"2026-03-20T01:32:46.934Z","Customer_swc388415","Smartwatch x3, Tablet x1",1350.00,32.00,1318.00,24.0,21,0.35
+"2026-03-20T01:32:51.206Z","Customer_wbbuabe33","Headphones x2, Smartwatch x1",600.00,32.00,568.00,27.0,26,0.43
+"2026-03-20T01:36:23.827Z","Customer_mh7ewd9xw","Smartwatch x2, Tablet x1",1050.00,32.00,1018.00,27.7,9,0.15
+"2026-03-20T01:42:01.852Z","Customer_1903xzamt","Smartwatch x3, Tablet x1",1350.00,32.00,1318.00,27.7,113,1.88
+"2026-03-20T01:54:17.289Z","Customer_p50o7ddm3","Smartwatch x3, Tablet x1",1350.00,32.00,1318.00,27.7,6,0.10
+"2026-03-20T02:27:17.962Z","Customer_fqkev8smz","Smartwatch x4, Tablet x1",1650.00,100.29,1549.71,27.7,3,0.05
+"2026-03-20T02:29:17.947Z","Customer_kz5aa5lmu","Smartwatch x3, Tablet x1",1350.00,3.00,1347.00,24.0,123,2.05
+"2026-03-20T02:29:22.907Z","Customer_03isnx2sy","Smartwatch x3, Tablet x2",1800.00,3.00,1797.00,27.7,3,0.05
+"2026-03-20T02:29:28.538Z","Customer_v9p264nnn","Tablet x1",450.00,3.00,447.00,24.0,9,0.15
+"2026-03-20T02:33:01.285Z","Customer_cv9n98gmg","Smartwatch x3, Tablet x1",1350.00,3.00,1347.00,27.7,4,0.07
+"2026-03-20T02:35:09.383Z","Customer_u2gl6c4yr","Smartwatch x3",900.00,3.00,897.00,27.7,7,0.12
+"2026-03-20T11:01:02.572Z","Customer_1ijsner9g","Smartphone x2, Headphones x2",1700.00,3.00,1697.00,27.7,7,0.12
+"2026-03-20T11:01:11.571Z","Customer_47hqjcumw","Smartwatch x7, Tablet x3",3450.00,134.00,3316.00,24.0,16,0.27
+"2026-03-20T11:01:29.822Z","Customer_oj973uy95","Smartphone x1",700.00,40.22,659.78,42.3,34,0.57
+"2026-03-20T11:01:37.907Z","Customer_zj1vgthly","Smartphone x1",700.00,43.07,656.93,45.3,42,0.70
+"2026-03-20T11:01:40.672Z","Customer_4d24exhke","Smartphone x1",700.00,31.35,668.65,33.0,45,0.75
+"2026-03-20T11:01:43.935Z","Customer_b1gpxzp4e","Smartphone x1",700.00,34.20,665.80,36.0,48,0.80
+"2026-03-20T11:01:58.156Z","Customer_db68npg8e","Smartphone x1",700.00,23.00,677.00,54.3,62,1.03
+"2026-03-20T11:02:03.477Z","Customer_n7tuoutur","Smartphone x1",700.00,23.00,677.00,42.0,68,1.13
+"2026-03-20T11:02:09.522Z","Customer_ekc82i0fz","Smartphone x1",700.00,23.00,677.00,48.3,74,1.23
+"2026-03-20T11:02:18.840Z","Customer_2ybshd6qx","Smartphone x1",700.00,45.92,654.08,48.3,83,1.38
+"2026-03-20T11:02:20.737Z","Customer_iqkjo532d","Smartphone x1",700.00,31.35,668.65,33.0,85,1.42
+"2026-03-20T11:02:52.055Z","Customer_rkhivwxso","Smartphone x2, Headphones x4, Smartwatch x4, Tablet x1",3650.00,100.00,3550.00,30.7,116,1.93
+"2026-03-20T11:07:06.140Z","Customer_bw0v9zgf9","Smartwatch x2, Tablet x1",1050.00,3.00,1047.00,27.7,8,0.13
+"2026-03-20T11:07:14.602Z","Customer_vtcw8b0oq","Tablet x1",450.00,3.00,447.00,24.0,16,0.27
+"2026-03-20T11:07:18.091Z","Customer_z1mso9nv9","Smartwatch x1",300.00,3.00,297.00,27.0,20,0.33

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Coupon Store Pro</title>
+
+<style>
+:root{
+--bg:#f3f3f3;
+--card:white;
+--text:black;
+--header:#131921;
+--accent:#FFA41C;
+}
+
+body.dark{
+--bg:#121212;
+--card:#1e1e1e;
+--text:#f5f5f5;
+--header:#000000;
+--accent:#ff9900;
+}
+
+body{
+font-family:Arial;
+margin:0;
+background:var(--bg);
+color:var(--text);
+}
+
+header{
+background:var(--header);
+color:white;
+padding:15px;
+font-size:22px;
+display:flex;
+justify-content:space-between;
+}
+
+.toggle-btn{
+background:var(--accent);
+border:none;
+padding:6px 12px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.container{
+display:flex;
+padding:20px;
+}
+
+.products{
+flex:3;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:20px;
+}
+
+.product{
+background:var(--card);
+padding:15px;
+border-radius:8px;
+box-shadow:0 0 8px rgba(0,0,0,0.1);
+}
+
+.product button{
+width:100%;
+padding:8px;
+background:#FFD814;
+border:none;
+cursor:pointer;
+font-weight:bold;
+}
+
+.cart{
+flex:1;
+background:var(--card);
+margin-left:20px;
+padding:15px;
+border-radius:8px;
+}
+
+.checkout-btn{
+background:var(--accent);
+border:none;
+font-weight:bold;
+padding:8px;
+width:100%;
+}
+
+.admin{
+position:fixed;
+top:90px;
+right:20px;
+background:var(--card);
+padding:12px;
+border-radius:8px;
+font-size:12px;
+width:240px;
+box-shadow:0 0 8px rgba(0,0,0,0.2);
+z-index:1000;
+}
+
+.admin input{
+width:100%;
+margin-bottom:6px;
+}
+
+.weight-bar-container{
+background:#ccc;
+border-radius:6px;
+overflow:hidden;
+height:14px;
+margin-top:5px;
+}
+
+.weight-bar{
+height:100%;
+width:0%;
+background:limegreen;
+transition:width .3s;
+}
+
+.result{
+margin-top:10px;
+background:rgba(0,150,255,.1);
+padding:10px;
+border-radius:6px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+Smart Coupon Store Pro
+<button class="toggle-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+</header>
+
+<div class="container">
+
+<div class="products" id="products"></div>
+
+<div class="cart">
+
+<h3>Your Cart</h3>
+<div id="cartItems"></div>
+
+<p><b>Total:</b> $<span id="total">0</span></p>
+
+<h4>Live Behavioral Weight</h4>
+
+<div class="weight-bar-container">
+<div class="weight-bar" id="weightBar"></div>
+</div>
+
+<div id="livePreview"></div>
+
+<button class="checkout-btn" onclick="checkout()">Checkout</button>
+
+<div id="result"></div>
+
+</div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin" id="adminPanel">
+
+<div id="adminHeader" style="cursor:move;font-weight:bold;margin-bottom:8px;">
+Admin Controls ⚙️
+</div>
+
+Days Inactive
+<input type="number" id="daysInactive">
+
+Psych Score
+<input type="range" min="0" max="1" step="0.1" id="psychSlider">
+
+Max % Cap
+<input type="number" id="capPercent">
+
+Max $ Cap
+<input type="number" id="capDollar">
+
+<button onclick="updateAdmin()">Update</button>
+
+</div>
+
+<!-- PRODUCT SIMULATOR -->
+<div class="admin" id="productPanel" style="top:330px;">
+
+<div id="productHeader" style="cursor:move;font-weight:bold;margin-bottom:8px;">
+Product Simulator 🧪
+</div>
+
+Product ID
+<input type="number" id="productId">
+
+Name
+<input type="text" id="productName">
+
+Price
+<input type="number" id="productPrice">
+
+Cost
+<input type="number" id="productCost">
+
+<button onclick="updateProduct()">Update Product</button>
+
+</div>
+
+<script>
+
+let settings = JSON.parse(localStorage.getItem("settings")) || {
+MIN_PROFIT_MARGIN:0.15,
+T:60,
+L_MAX:10,
+S_MAX:1,
+W1:0.4,
+W2:0.3,
+W3:0.3,
+CAP_PERCENT:0.30,
+CAP_DOLLAR:500
+};
+
+let user={
+lastLogin:new Date(Date.now()-10*24*60*60*1000),
+loyalty:2,
+psych:0.5
+};
+
+// Track session start time
+let sessionStartTime = Date.now();
+
+const products={
+1:{name:"Laptop",price:1000,cost:750},
+2:{name:"Smartphone",price:700,cost:500},
+3:{name:"Headphones",price:150,cost:80},
+4:{name:"Smartwatch",price:300,cost:180},
+5:{name:"Tablet",price:450,cost:320},
+6:{name:"Gaming Mouse",price:80,cost:40}
+};
+
+let cart={};
+
+function renderProducts(){
+
+let div=document.getElementById("products");
+div.innerHTML="";
+
+for(let id in products){
+
+let p=products[id];
+
+div.innerHTML+=`
+<div class="product">
+<h4>${p.name}</h4>
+<p>$${p.price}</p>
+<button onclick="addToCart(${id})">Add to Cart</button>
+</div>`;
+}
+
+}
+
+function addToCart(id){
+
+if(!cart[id])
+cart[id]={...products[id],quantity:1};
+else
+cart[id].quantity++;
+
+updateCart();
+}
+
+function removeItem(id){
+
+cart[id].quantity--;
+
+if(cart[id].quantity<=0)
+delete cart[id];
+
+updateCart();
+}
+
+function updateCart(){
+
+let div=document.getElementById("cartItems");
+div.innerHTML="";
+
+let total=0;
+
+for(let id in cart){
+
+let item=cart[id];
+let sub=item.price*item.quantity;
+
+total+=sub;
+
+div.innerHTML+=`${item.name} x${item.quantity} - $${sub.toFixed(2)}
+<button onclick="removeItem(${id})">-</button><br>`;
+}
+
+document.getElementById("total").innerText=total.toFixed(2);
+
+updateLiveMetrics(total);
+}
+
+function calculateCoupon(price,cost,daysInactive){
+
+price = Number(price);
+cost = Number(cost);
+
+// Minimum profit requirement
+let minProfit = price * settings.MIN_PROFIT_MARGIN;
+
+// Lowest allowed price
+let minimumFinalPrice = cost + minProfit;
+
+// Max discount allowed
+let maxDiscountAllowed = price - minimumFinalPrice;
+
+if(maxDiscountAllowed <= 0){
+return [0,0,0];
+}
+
+// Behavioral weights
+let timeFactor = Math.min(daysInactive/settings.T,1) * settings.W1;
+let loyaltyFactor = Math.min(user.loyalty/settings.L_MAX,1) * settings.W2;
+let psychFactor = Math.min(user.psych/settings.S_MAX,1) * settings.W3;
+
+let BW = Math.min(timeFactor + loyaltyFactor + psychFactor,1);
+
+// Desired discount
+let desiredDiscount = maxDiscountAllowed * BW;
+
+// Caps
+let percentCap = settings.CAP_PERCENT ? price * settings.CAP_PERCENT : price;
+let dollarCap = settings.CAP_DOLLAR ? settings.CAP_DOLLAR : price;
+
+let finalDiscount = Math.min(
+desiredDiscount,
+maxDiscountAllowed,
+percentCap,
+dollarCap
+);
+
+// Safety floor
+let finalPrice = price - finalDiscount;
+
+if(finalPrice < minimumFinalPrice){
+finalPrice = minimumFinalPrice;
+finalDiscount = price - finalPrice;
+}
+
+return [finalDiscount,maxDiscountAllowed,BW];
+}
+
+function updateLiveMetrics(totalPrice){
+
+if(totalPrice===0){
+document.getElementById("weightBar").style.width="0%";
+document.getElementById("livePreview").innerHTML="";
+return;
+}
+
+let totalCost=0;
+
+for(let id in cart)
+totalCost+=cart[id].cost*cart[id].quantity;
+
+let daysInactive=Math.floor((Date.now()-user.lastLogin)/(1000*60*60*24));
+
+let[discount,maxDiscount,BW]=calculateCoupon(totalPrice,totalCost,daysInactive);
+
+document.getElementById("weightBar").style.width=(BW*100)+"%";
+
+document.getElementById("livePreview").innerHTML=
+`<div class="result">
+Estimated Discount: $${discount.toFixed(2)}<br>
+Estimated Final: $${(totalPrice-discount).toFixed(2)}
+</div>`;
+}
+
+function checkout(){
+
+let totalPrice=0;
+let totalCost=0;
+let itemsList = [];
+
+for(let id in cart){
+totalPrice+=cart[id].price*cart[id].quantity;
+totalCost+=cart[id].cost*cart[id].quantity;
+itemsList.push(`${cart[id].name} x${cart[id].quantity}`);
+}
+
+if(totalPrice===0){
+alert("Cart Empty");
+return;
+}
+
+let daysInactive=Math.floor((Date.now()-user.lastLogin)/(1000*60*60*24));
+
+let[discount,maxDiscount,BW]=calculateCoupon(totalPrice,totalCost,daysInactive);
+
+let finalPrice=totalPrice-discount;
+
+// Calculate session duration in seconds
+let sessionDuration = Math.round((Date.now() - sessionStartTime) / 1000);
+
+// Send checkout data to server
+let checkoutData = {
+user: "Customer_" + Math.random().toString(36).substr(2, 9),
+items: itemsList.join(", "),
+total: totalPrice.toFixed(2),
+discount: discount.toFixed(2),
+final: finalPrice.toFixed(2),
+weight: (BW*100).toFixed(1),
+sessionDuration: sessionDuration,
+time: new Date().toLocaleString()
+};
+
+fetch("/log", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify(checkoutData)
+}).catch(err => console.error("Logging error:", err));
+
+document.getElementById("result").innerHTML=
+`<div class="result">
+<h4>Checkout Summary</h4>
+Original Total: $${totalPrice.toFixed(2)}<br>
+Discount Applied: -$${discount.toFixed(2)}<br>
+Final Price: <b>$${finalPrice.toFixed(2)}</b><br>
+Behavior Weight: ${(BW*100).toFixed(1)}%<br>
+<small>Session Time: ${Math.floor(sessionDuration/60)}m ${sessionDuration%60}s</small>
+</div>`;
+
+cart={};
+updateCart();
+
+user.loyalty++;
+user.lastLogin=new Date();
+}
+
+function updateAdmin(){
+
+let days=document.getElementById("daysInactive").value;
+
+if(days)
+user.lastLogin=new Date(Date.now()-days*24*60*60*1000);
+
+user.psych=parseFloat(document.getElementById("psychSlider").value);
+
+settings.CAP_PERCENT=parseFloat(document.getElementById("capPercent").value);
+settings.CAP_DOLLAR=parseFloat(document.getElementById("capDollar").value);
+
+localStorage.setItem("settings",JSON.stringify(settings));
+
+updateCart();
+}
+
+function updateProduct(){
+
+let id=document.getElementById("productId").value;
+
+if(!products[id]){
+alert("Invalid Product ID");
+return;
+}
+
+let name=document.getElementById("productName").value;
+let price=parseFloat(document.getElementById("productPrice").value);
+let cost=parseFloat(document.getElementById("productCost").value);
+
+if(price && cost && price<=cost){
+alert("Price must be greater than cost");
+return;
+}
+
+if(name) products[id].name=name;
+if(price) products[id].price=price;
+if(cost) products[id].cost=cost;
+
+renderProducts();
+updateCart();
+}
+
+function toggleDarkMode(){
+document.body.classList.toggle("dark");
+}
+
+dragElement(document.getElementById("adminPanel"));
+dragElement(document.getElementById("productPanel"));
+
+function dragElement(elmnt){
+
+let pos1=0,pos2=0,pos3=0,pos4=0;
+
+elmnt.onmousedown=dragMouseDown;
+
+function dragMouseDown(e){
+pos3=e.clientX;
+pos4=e.clientY;
+document.onmouseup=closeDrag;
+document.onmousemove=elementDrag;
+}
+
+function elementDrag(e){
+pos1=pos3-e.clientX;
+pos2=pos4-e.clientY;
+pos3=e.clientX;
+pos4=e.clientY;
+elmnt.style.top=(elmnt.offsetTop-pos2)+"px";
+elmnt.style.left=(elmnt.offsetLeft-pos1)+"px";
+}
+
+function closeDrag(){
+document.onmouseup=null;
+document.onmousemove=null;
+}
+
+}
+
+renderProducts();
+
+</script>
+
+</body>
+</html>
+</html>

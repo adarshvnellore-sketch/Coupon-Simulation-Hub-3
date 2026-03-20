@@ -1,0 +1,22 @@
+{
+  "name": "coupon-simulation-hub",
+  "version": "1.0.0",
+  "description": "Algorithm-based coupon system simulation for businesses",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "coupon",
+    "discount",
+    "algorithm",
+    "simulation",
+    "behavioral"
+  ],
+  "author": "adarshvnellore-sketch",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
