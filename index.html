@@ -2,7 +2,6 @@
 <html>
 <head>
 <title>Smart Coupon Store Pro</title>
-
 <style>
 :root{
 --bg:#f3f3f3;
@@ -11,7 +10,6 @@
 --header:#131921;
 --accent:#FFA41C;
 }
-
 body.dark{
 --bg:#121212;
 --card:#1e1e1e;
@@ -19,14 +17,12 @@ body.dark{
 --header:#000000;
 --accent:#ff9900;
 }
-
 body{
 font-family:Arial;
 margin:0;
 background:var(--bg);
 color:var(--text);
 }
-
 header{
 background:var(--header);
 color:white;
@@ -35,7 +31,6 @@ font-size:22px;
 display:flex;
 justify-content:space-between;
 }
-
 .toggle-btn{
 background:var(--accent);
 border:none;
@@ -43,26 +38,22 @@ padding:6px 12px;
 cursor:pointer;
 font-weight:bold;
 }
-
 .container{
 display:flex;
 padding:20px;
 }
-
 .products{
 flex:3;
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
 gap:20px;
 }
-
 .product{
 background:var(--card);
 padding:15px;
 border-radius:8px;
 box-shadow:0 0 8px rgba(0,0,0,0.1);
 }
-
 .product button{
 width:100%;
 padding:8px;
@@ -71,7 +62,6 @@ border:none;
 cursor:pointer;
 font-weight:bold;
 }
-
 .cart{
 flex:1;
 background:var(--card);
@@ -79,7 +69,6 @@ margin-left:20px;
 padding:15px;
 border-radius:8px;
 }
-
 .checkout-btn{
 background:var(--accent);
 border:none;
@@ -87,7 +76,6 @@ font-weight:bold;
 padding:8px;
 width:100%;
 }
-
 .admin{
 position:fixed;
 top:90px;
@@ -100,12 +88,30 @@ width:240px;
 box-shadow:0 0 8px rgba(0,0,0,0.2);
 z-index:1000;
 }
-
+.admin-header{
+cursor:move;
+font-weight:bold;
+margin-bottom:8px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+.admin-minimize-btn{
+background:none;
+border:none;
+cursor:pointer;
+font-size:18px;
+padding:0;
+width:24px;
+height:24px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
 .admin input{
 width:100%;
 margin-bottom:6px;
 }
-
 .weight-bar-container{
 background:#ccc;
 border-radius:6px;
@@ -113,21 +119,18 @@ overflow:hidden;
 height:14px;
 margin-top:5px;
 }
-
 .weight-bar{
 height:100%;
 width:0%;
 background:limegreen;
 transition:width .3s;
 }
-
 .result{
 margin-top:10px;
 background:rgba(0,150,255,.1);
 padding:10px;
 border-radius:6px;
 }
-
 /* ── Purchase Logs Section ── */
 .logs-section{
 margin:24px 20px;
@@ -136,21 +139,18 @@ border-radius:10px;
 box-shadow:0 0 10px rgba(0,0,0,0.12);
 padding:20px;
 }
-
 .logs-section h2{
 margin:0 0 4px 0;
 font-size:20px;
 display:flex;
+justify-content:space-between;
 align-items:center;
-gap:8px;
 }
-
 .logs-meta{
 font-size:12px;
 color:#888;
 margin-bottom:14px;
 }
-
 .logs-actions{
 display:flex;
 gap:10px;
@@ -158,7 +158,6 @@ margin-bottom:16px;
 flex-wrap:wrap;
 align-items:center;
 }
-
 .logs-btn{
 padding:7px 14px;
 border:none;
@@ -169,37 +168,30 @@ font-weight:bold;
 text-decoration:none;
 display:inline-block;
 }
-
 .logs-btn-csv{ background:#FFD814; color:#111; }
 .logs-btn-txt{ background:#FFA41C; color:#111; }
 .logs-btn-csv:hover{ background:#f0c800; }
 .logs-btn-txt:hover{ background:#e8920a; }
-
 .logs-refresh-indicator{
 font-size:12px;
 color:#888;
 margin-left:auto;
 }
-
 .logs-table-wrap{
 overflow-x:auto;
 }
-
 .logs-table{
 width:100%;
 border-collapse:collapse;
 font-size:13px;
 }
-
 .logs-table thead tr{
 background:#131921;
 color:#FFA41C;
 }
-
 body.dark .logs-table thead tr{
 background:#000;
 }
-
 .logs-table th{
 padding:10px 12px;
 text-align:left;
@@ -207,42 +199,34 @@ white-space:nowrap;
 font-weight:bold;
 letter-spacing:.3px;
 }
-
 .logs-table td{
 padding:9px 12px;
 border-bottom:1px solid rgba(0,0,0,0.07);
 white-space:nowrap;
 }
-
 body.dark .logs-table td{
 border-bottom:1px solid rgba(255,255,255,0.07);
 }
-
 .logs-table tbody tr:last-child td{ border-bottom:none; }
 .logs-table tbody tr:nth-child(even) td{ background:rgba(0,0,0,0.03); }
 body.dark .logs-table tbody tr:nth-child(even) td{ background:rgba(255,255,255,0.04); }
 .logs-table tbody tr:hover td{ background:rgba(255,164,28,0.1); }
-
 .logs-empty{
 text-align:center;
 padding:30px;
 color:#aaa;
 font-size:14px;
 }
-
 .logs-badge-discount{
 color:#c7511f;
 font-weight:bold;
 }
-
 .logs-badge-final{
 color:#007600;
 font-weight:bold;
 }
-
 body.dark .logs-badge-final{ color:#4caf50; }
 body.dark .logs-badge-discount{ color:#ff8c42; }
-
 .logs-count{
 margin-top:10px;
 font-size:12px;
@@ -250,53 +234,40 @@ color:#888;
 }
 </style>
 </head>
-
-
 <body>
-
 <header>
 Smart Coupon Store Pro
 <button class="toggle-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
 </header>
-
 <div class="container">
-
 <div class="products" id="products"></div>
-
 <div class="cart">
-
 <h3>Your Cart</h3>
 <div id="cartItems"></div>
-
 <p><b>Total:</b> $<span id="total">0</span></p>
-
 <h4>Live Behavioral Weight</h4>
-
 <div class="weight-bar-container">
 <div class="weight-bar" id="weightBar"></div>
 </div>
-
 <div id="livePreview"></div>
-
 <button class="checkout-btn" onclick="checkout()">Checkout</button>
-
 <div id="result"></div>
-
 </div>
 </div>
 
 <!-- PURCHASE LOGS SECTION -->
 <div class="logs-section">
-
-<h2>&#x1F4CB; Recent Purchases</h2>
+<h2>
+<span>📋 Recent Purchases</span>
+<button class="admin-minimize-btn" onclick="toggleLogs()" id="logsMinBtn">−</button>
+</h2>
+<div id="logsContent" style="display:block;">
 <p class="logs-meta">Showing the last 20 purchases &mdash; auto-refreshes every 5 seconds. <span id="logsLastUpdated"></span></p>
-
 <div class="logs-actions">
-<a class="logs-btn logs-btn-csv" href="/logs" download>&#x2B07; Download CSV</a>
-<a class="logs-btn logs-btn-txt" href="/logs-txt" download>&#x2B07; Download TXT</a>
-<span class="logs-refresh-indicator" id="logsRefreshIndicator">&#x1F504; Refreshing&hellip;</span>
+<a class="logs-btn logs-btn-csv" href="/logs" download>⬇ Download CSV</a>
+<a class="logs-btn logs-btn-txt" href="/logs-txt" download>⬇ Download TXT</a>
+<span class="logs-refresh-indicator" id="logsRefreshIndicator">🔄 Refreshing…</span>
 </div>
-
 <div class="logs-table-wrap">
 <table class="logs-table" id="logsTable">
 <thead>
@@ -310,64 +281,53 @@ Smart Coupon Store Pro
 </tr>
 </thead>
 <tbody id="logsTableBody">
-<tr><td colspan="6" class="logs-empty">Loading purchases&hellip;</td></tr>
+<tr><td colspan="6" class="logs-empty">Loading purchases…</td></tr>
 </tbody>
 </table>
 </div>
-
 <p class="logs-count" id="logsCount"></p>
-
+</div>
 </div>
 
 <!-- ADMIN PANEL -->
-
 <div class="admin" id="adminPanel">
-
-<div id="adminHeader" style="cursor:move;font-weight:bold;margin-bottom:8px;">
-Admin Controls ⚙️
+<div class="admin-header">
+<span>⚙️ Admin Controls</span>
+<button class="admin-minimize-btn" onclick="toggleAdmin()" id="adminMinBtn">−</button>
 </div>
-
+<div id="adminContent" style="display:block;">
 Days Inactive
 <input type="number" id="daysInactive">
-
 Psych Score
 <input type="range" min="0" max="1" step="0.1" id="psychSlider">
-
 Max % Cap
 <input type="number" id="capPercent">
-
 Max $ Cap
 <input type="number" id="capDollar">
-
 <button onclick="updateAdmin()">Update</button>
-
+</div>
 </div>
 
 <!-- PRODUCT SIMULATOR -->
 <div class="admin" id="productPanel" style="top:330px;">
-
-<div id="productHeader" style="cursor:move;font-weight:bold;margin-bottom:8px;">
-Product Simulator 🧪
+<div class="admin-header">
+<span>🧪 Product Simulator</span>
+<button class="admin-minimize-btn" onclick="toggleProduct()" id="productMinBtn">−</button>
 </div>
-
+<div id="productContent" style="display:block;">
 Product ID
 <input type="number" id="productId">
-
 Name
 <input type="text" id="productName">
-
 Price
 <input type="number" id="productPrice">
-
 Cost
 <input type="number" id="productCost">
-
 <button onclick="updateProduct()">Update Product</button>
-
+</div>
 </div>
 
 <script>
-
 let settings = JSON.parse(localStorage.getItem("settings")) || {
 MIN_PROFIT_MARGIN:0.15,
 T:60,
@@ -379,16 +339,13 @@ W3:0.3,
 CAP_PERCENT:0.30,
 CAP_DOLLAR:500
 };
-
 let user={
 lastLogin:new Date(Date.now()-10*24*60*60*1000),
 loyalty:2,
 psych:0.5
 };
-
 // Track session start time
 let sessionStartTime = Date.now();
-
 const products={
 1:{name:"Laptop",price:1000,cost:750},
 2:{name:"Smartphone",price:700,cost:500},
@@ -397,18 +354,12 @@ const products={
 5:{name:"Tablet",price:450,cost:320},
 6:{name:"Gaming Mouse",price:80,cost:40}
 };
-
 let cart={};
-
 function renderProducts(){
-
 let div=document.getElementById("products");
 div.innerHTML="";
-
 for(let id in products){
-
 let p=products[id];
-
 div.innerHTML+=`
 <div class="product">
 <h4>${p.name}</h4>
@@ -416,154 +367,106 @@ div.innerHTML+=`
 <button onclick="addToCart(${id})">Add to Cart</button>
 </div>`;
 }
-
 }
-
 function addToCart(id){
-
 if(!cart[id])
 cart[id]={...products[id],quantity:1};
 else
 cart[id].quantity++;
-
 updateCart();
 }
-
 function removeItem(id){
-
 cart[id].quantity--;
-
 if(cart[id].quantity<=0)
 delete cart[id];
-
 updateCart();
 }
-
 function updateCart(){
-
 let div=document.getElementById("cartItems");
 div.innerHTML="";
-
 let total=0;
-
 for(let id in cart){
-
 let item=cart[id];
 let sub=item.price*item.quantity;
-
 total+=sub;
-
 div.innerHTML+=`${item.name} x${item.quantity} - $${sub.toFixed(2)}
 <button onclick="removeItem(${id})">-</button><br>`;
 }
-
 document.getElementById("total").innerText=total.toFixed(2);
-
 updateLiveMetrics(total);
 }
-
 function calculateCoupon(price,cost,daysInactive){
-
 price = Number(price);
 cost = Number(cost);
-
 // Minimum profit requirement
 let minProfit = price * settings.MIN_PROFIT_MARGIN;
-
 // Lowest allowed price
 let minimumFinalPrice = cost + minProfit;
-
 // Max discount allowed
 let maxDiscountAllowed = price - minimumFinalPrice;
-
 if(maxDiscountAllowed <= 0){
 return [0,0,0];
 }
-
 // Behavioral weights
 let timeFactor = Math.min(daysInactive/settings.T,1) * settings.W1;
 let loyaltyFactor = Math.min(user.loyalty/settings.L_MAX,1) * settings.W2;
 let psychFactor = Math.min(user.psych/settings.S_MAX,1) * settings.W3;
-
 let BW = Math.min(timeFactor + loyaltyFactor + psychFactor,1);
-
 // Desired discount
 let desiredDiscount = maxDiscountAllowed * BW;
-
 // Caps
 let percentCap = settings.CAP_PERCENT ? price * settings.CAP_PERCENT : price;
 let dollarCap = settings.CAP_DOLLAR ? settings.CAP_DOLLAR : price;
-
 let finalDiscount = Math.min(
 desiredDiscount,
 maxDiscountAllowed,
 percentCap,
 dollarCap
 );
-
 // Safety floor
 let finalPrice = price - finalDiscount;
-
 if(finalPrice < minimumFinalPrice){
 finalPrice = minimumFinalPrice;
 finalDiscount = price - finalPrice;
 }
-
 return [finalDiscount,maxDiscountAllowed,BW];
 }
-
 function updateLiveMetrics(totalPrice){
-
 if(totalPrice===0){
 document.getElementById("weightBar").style.width="0%";
 document.getElementById("livePreview").innerHTML="";
 return;
 }
-
 let totalCost=0;
-
 for(let id in cart)
 totalCost+=cart[id].cost*cart[id].quantity;
-
 let daysInactive=Math.floor((Date.now()-user.lastLogin)/(1000*60*60*24));
-
 let[discount,maxDiscount,BW]=calculateCoupon(totalPrice,totalCost,daysInactive);
-
 document.getElementById("weightBar").style.width=(BW*100)+"%";
-
 document.getElementById("livePreview").innerHTML=
 `<div class="result">
 Estimated Discount: $${discount.toFixed(2)}<br>
 Estimated Final: $${(totalPrice-discount).toFixed(2)}
 </div>`;
 }
-
 function checkout(){
-
 let totalPrice=0;
 let totalCost=0;
 let itemsList = [];
-
 for(let id in cart){
 totalPrice+=cart[id].price*cart[id].quantity;
 totalCost+=cart[id].cost*cart[id].quantity;
 itemsList.push(`${cart[id].name} x${cart[id].quantity}`);
 }
-
 if(totalPrice===0){
 alert("Cart Empty");
 return;
 }
-
 let daysInactive=Math.floor((Date.now()-user.lastLogin)/(1000*60*60*24));
-
 let[discount,maxDiscount,BW]=calculateCoupon(totalPrice,totalCost,daysInactive);
-
 let finalPrice=totalPrice-discount;
-
 // Calculate session duration in seconds
 let sessionDuration = Math.round((Date.now() - sessionStartTime) / 1000);
-
 // Send checkout data to server
 let checkoutData = {
 user: "Customer_" + Math.random().toString(36).substr(2, 9),
@@ -575,13 +478,11 @@ weight: (BW*100).toFixed(1),
 sessionDuration: sessionDuration,
 time: new Date().toLocaleString()
 };
-
 fetch("/log", {
 method: "POST",
 headers: {"Content-Type": "application/json"},
 body: JSON.stringify(checkoutData)
 }).catch(err => console.error("Logging error:", err));
-
 document.getElementById("result").innerHTML=
 `<div class="result">
 <h4>Checkout Summary</h4>
@@ -591,77 +492,92 @@ Final Price: <b>$${finalPrice.toFixed(2)}</b><br>
 Behavior Weight: ${(BW*100).toFixed(1)}%<br>
 <small>Session Time: ${Math.floor(sessionDuration/60)}m ${sessionDuration%60}s</small>
 </div>`;
-
 cart={};
 updateCart();
-
 user.loyalty++;
 user.lastLogin=new Date();
 }
-
 function updateAdmin(){
-
 let days=document.getElementById("daysInactive").value;
-
 if(days)
 user.lastLogin=new Date(Date.now()-days*24*60*60*1000);
-
 user.psych=parseFloat(document.getElementById("psychSlider").value);
-
 settings.CAP_PERCENT=parseFloat(document.getElementById("capPercent").value);
 settings.CAP_DOLLAR=parseFloat(document.getElementById("capDollar").value);
-
 localStorage.setItem("settings",JSON.stringify(settings));
-
 updateCart();
 }
-
 function updateProduct(){
-
 let id=document.getElementById("productId").value;
-
 if(!products[id]){
 alert("Invalid Product ID");
 return;
 }
-
 let name=document.getElementById("productName").value;
 let price=parseFloat(document.getElementById("productPrice").value);
 let cost=parseFloat(document.getElementById("productCost").value);
-
 if(price && cost && price<=cost){
 alert("Price must be greater than cost");
 return;
 }
-
 if(name) products[id].name=name;
 if(price) products[id].price=price;
 if(cost) products[id].cost=cost;
-
 renderProducts();
 updateCart();
 }
-
 function toggleDarkMode(){
 document.body.classList.toggle("dark");
 }
 
+// ── Minimize/Maximize Functions ──
+function toggleAdmin() {
+  const content = document.getElementById("adminContent");
+  const btn = document.getElementById("adminMinBtn");
+  if (content.style.display === "none") {
+    content.style.display = "block";
+    btn.textContent = "−";
+  } else {
+    content.style.display = "none";
+    btn.textContent = "+";
+  }
+}
+
+function toggleProduct() {
+  const content = document.getElementById("productContent");
+  const btn = document.getElementById("productMinBtn");
+  if (content.style.display === "none") {
+    content.style.display = "block";
+    btn.textContent = "−";
+  } else {
+    content.style.display = "none";
+    btn.textContent = "+";
+  }
+}
+
+function toggleLogs() {
+  const content = document.getElementById("logsContent");
+  const btn = document.getElementById("logsMinBtn");
+  if (content.style.display === "none") {
+    content.style.display = "block";
+    btn.textContent = "−";
+  } else {
+    content.style.display = "none";
+    btn.textContent = "+";
+  }
+}
+
 dragElement(document.getElementById("adminPanel"));
 dragElement(document.getElementById("productPanel"));
-
 function dragElement(elmnt){
-
 let pos1=0,pos2=0,pos3=0,pos4=0;
-
 elmnt.onmousedown=dragMouseDown;
-
 function dragMouseDown(e){
 pos3=e.clientX;
 pos4=e.clientY;
 document.onmouseup=closeDrag;
 document.onmousemove=elementDrag;
 }
-
 function elementDrag(e){
 pos1=pos3-e.clientX;
 pos2=pos4-e.clientY;
@@ -670,105 +586,87 @@ pos4=e.clientY;
 elmnt.style.top=(elmnt.offsetTop-pos2)+"px";
 elmnt.style.left=(elmnt.offsetLeft-pos1)+"px";
 }
-
 function closeDrag(){
 document.onmouseup=null;
 document.onmousemove=null;
 }
-
 }
-
 renderProducts();
-
 // ── Purchase Logs: fetch from /logs-data and render table ──
-
 function formatTimestamp(ts) {
-  if (!ts) return "";
-  try {
-    const d = new Date(ts);
-    if (isNaN(d)) return ts;
-    return d.toLocaleString();
-  } catch(e) { return ts; }
+ if (!ts) return "";
+ try {
+ const d = new Date(ts);
+ if (isNaN(d)) return ts;
+ return d.toLocaleString();
+ } catch(e) { return ts; }
 }
-
 // Column indices in the CSV we care about (by header name)
 const LOG_COLS = {
-  timestamp: "Timestamp",
-  customer:  "Customer",
-  items:     "Items",
-  total:     "Original Total",
-  discount:  "Discount",
-  final:     "Final Price"
+ timestamp: "Timestamp",
+ customer: "Customer",
+ items: "Items",
+ total: "Original Total",
+ discount: "Discount",
+ final: "Final Price"
 };
-
 function findColIndex(headers, name) {
-  return headers.findIndex(h => h.trim().toLowerCase() === name.toLowerCase());
+ return headers.findIndex(h => h.trim().toLowerCase() === name.toLowerCase());
 }
-
 function renderLogsTable(data) {
-  const tbody = document.getElementById("logsTableBody");
-  const countEl = document.getElementById("logsCount");
-  const indicator = document.getElementById("logsRefreshIndicator");
-
-  if (!data || !data.rows || data.rows.length === 0) {
-    tbody.innerHTML = "<tr><td colspan=\"6\" class=\"logs-empty\">No purchases recorded yet. Make a checkout to see logs here!</td></tr>";
-    if (countEl) countEl.textContent = "";
-    if (indicator) indicator.textContent = "✔ Up to date";
-    return;
-  }
-
-  const headers = data.headers || [];
-  const idxTimestamp = findColIndex(headers, LOG_COLS.timestamp);
-  const idxCustomer  = findColIndex(headers, LOG_COLS.customer);
-  const idxItems     = findColIndex(headers, LOG_COLS.items);
-  const idxTotal     = findColIndex(headers, LOG_COLS.total);
-  const idxDiscount  = findColIndex(headers, LOG_COLS.discount);
-  const idxFinal     = findColIndex(headers, LOG_COLS.final);
-
-  let html = "";
-  data.rows.forEach(function(row) {
-    const ts       = idxTimestamp >= 0 ? formatTimestamp(row[idxTimestamp]) : "";
-    const customer = idxCustomer  >= 0 ? row[idxCustomer]  : "";
-    const items    = idxItems     >= 0 ? row[idxItems]     : "";
-    const total    = idxTotal     >= 0 ? "$" + parseFloat(row[idxTotal] || 0).toFixed(2)    : "";
-    const discount = idxDiscount  >= 0 ? "-$" + parseFloat(row[idxDiscount] || 0).toFixed(2) : "";
-    const final    = idxFinal     >= 0 ? "$" + parseFloat(row[idxFinal] || 0).toFixed(2)    : "";
-
-    html += "<tr>" +
-      "<td>" + ts + "</td>" +
-      "<td>" + customer + "</td>" +
-      "<td>" + items + "</td>" +
-      "<td>" + total + "</td>" +
-      "<td class=\"logs-badge-discount\">" + discount + "</td>" +
-      "<td class=\"logs-badge-final\">" + final + "</td>" +
-      "</tr>";
-  });
-
-  tbody.innerHTML = html;
-  if (countEl) countEl.textContent = data.rows.length + " record(s) shown (most recent first).";
-  if (indicator) indicator.textContent = "✔ Updated " + new Date().toLocaleTimeString();
+ const tbody = document.getElementById("logsTableBody");
+ const countEl = document.getElementById("logsCount");
+ const indicator = document.getElementById("logsRefreshIndicator");
+ if (!data || !data.rows || data.rows.length === 0) {
+ tbody.innerHTML = "<tr><td colspan=\"6\" class=\"logs-empty\">No purchases recorded yet. Make a checkout to see logs here!</td></tr>";
+ if (countEl) countEl.textContent = "";
+ if (indicator) indicator.textContent = "✔ Up to date";
+ return;
+ }
+ const headers = data.headers || [];
+ const idxTimestamp = findColIndex(headers, LOG_COLS.timestamp);
+ const idxCustomer = findColIndex(headers, LOG_COLS.customer);
+ const idxItems = findColIndex(headers, LOG_COLS.items);
+ const idxTotal = findColIndex(headers, LOG_COLS.total);
+ const idxDiscount = findColIndex(headers, LOG_COLS.discount);
+ const idxFinal = findColIndex(headers, LOG_COLS.final);
+ let html = "";
+ data.rows.forEach(function(row) {
+ const ts = idxTimestamp >= 0 ? formatTimestamp(row[idxTimestamp]) : "";
+ const customer = idxCustomer >= 0 ? row[idxCustomer] : "";
+ const items = idxItems >= 0 ? row[idxItems] : "";
+ const total = idxTotal >= 0 ? "$" + parseFloat(row[idxTotal] || 0).toFixed(2) : "";
+ const discount = idxDiscount >= 0 ? "-$" + parseFloat(row[idxDiscount] || 0).toFixed(2) : "";
+ const final = idxFinal >= 0 ? "$" + parseFloat(row[idxFinal] || 0).toFixed(2) : "";
+ html += "<tr>" +
+ "<td>" + ts + "</td>" +
+ "<td>" + customer + "</td>" +
+ "<td>" + items + "</td>" +
+ "<td>" + total + "</td>" +
+ "<td class=\"logs-badge-discount\">" + discount + "</td>" +
+ "<td class=\"logs-badge-final\">" + final + "</td>" +
+ "</tr>";
+ });
+ tbody.innerHTML = html;
+ if (countEl) countEl.textContent = data.rows.length + " record(s) shown (most recent first).";
+ if (indicator) indicator.textContent = "✔ Updated " + new Date().toLocaleTimeString();
 }
-
 function fetchLogs() {
-  const indicator = document.getElementById("logsRefreshIndicator");
-  if (indicator) indicator.textContent = "🔄 Refreshing…";
-
-  fetch("/logs-data")
-    .then(function(r) { return r.json(); })
-    .then(function(data) { renderLogsTable(data); })
-    .catch(function(err) {
-      console.error("Logs fetch error:", err);
-      const tbody = document.getElementById("logsTableBody");
-      if (tbody) tbody.innerHTML = "<tr><td colspan=\"6\" class=\"logs-empty\">Could not load logs. Will retry shortly.</td></tr>";
-      if (indicator) indicator.textContent = "⚠ Fetch failed";
-    });
+ const indicator = document.getElementById("logsRefreshIndicator");
+ if (indicator) indicator.textContent = "🔄 Refreshing...";
+ fetch("/logs-data")
+ .then(function(r) { return r.json(); })
+ .then(function(data) { renderLogsTable(data); })
+ .catch(function(err) {
+ console.error("Logs fetch error:", err);
+ const tbody = document.getElementById("logsTableBody");
+ if (tbody) tbody.innerHTML = "<tr><td colspan=\"6\" class=\"logs-empty\">Could not load logs. Will retry shortly.</td></tr>";
+ if (indicator) indicator.textContent = "⚠ Fetch failed";
+ });
 }
-
 // Initial load + auto-refresh every 5 seconds
 fetchLogs();
 setInterval(fetchLogs, 5000);
-
 </script>
-
 </body>
 </html>
