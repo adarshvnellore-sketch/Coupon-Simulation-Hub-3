@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smart Coupon Store Pro</title>
 <style>
 :root{
@@ -31,6 +32,9 @@ padding:15px;
 font-size:22px;
 display:flex;
 justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:10px;
 }
 .toggle-btn{
 background:var(--accent);
@@ -38,10 +42,25 @@ border:none;
 padding:6px 12px;
 cursor:pointer;
 font-weight:bold;
+border-radius:4px;
+}
+.mobile-menu-btns{
+display:none;
+gap:8px;
+}
+.mobile-menu-btns button{
+background:var(--accent);
+border:none;
+padding:6px 10px;
+cursor:pointer;
+font-weight:bold;
+border-radius:4px;
+font-size:12px;
 }
 .container{
 display:flex;
 padding:20px;
+gap:20px;
 }
 .products{
 flex:3;
@@ -62,13 +81,14 @@ background:#FFD814;
 border:none;
 cursor:pointer;
 font-weight:bold;
+border-radius:4px;
 }
 .cart{
 flex:1;
 background:var(--card);
-margin-left:20px;
 padding:15px;
 border-radius:8px;
+min-width:250px;
 }
 .checkout-btn{
 background:var(--accent);
@@ -76,6 +96,8 @@ border:none;
 font-weight:bold;
 padding:8px;
 width:100%;
+border-radius:4px;
+cursor:pointer;
 }
 .admin{
 position:fixed;
@@ -261,13 +283,118 @@ margin-top:10px;
 font-size:12px;
 color:#888;
 }
+
+/* ── MOBILE MODAL OVERLAY ── */
+.modal-overlay{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:999;
+}
+.modal-overlay.active{
+display:block;
+}
+.modal-panel{
+position:fixed;
+top:0;
+right:-100%;
+width:100%;
+max-width:400px;
+height:100vh;
+background:var(--card);
+z-index:1001;
+overflow-y:auto;
+transition:right 0.3s ease;
+padding:20px;
+box-sizing:border-box;
+}
+.modal-panel.active{
+right:0;
+}
+.modal-close-btn{
+background:var(--accent);
+border:none;
+padding:8px 12px;
+cursor:pointer;
+font-weight:bold;
+border-radius:4px;
+margin-bottom:15px;
+width:100%;
+}
+
+/* ── DESKTOP ONLY ── */
+@media (min-width:769px){
+.mobile-menu-btns{
+display:none !important;
+}
+.modal-overlay{
+display:none !important;
+}
+.modal-panel{
+display:none !important;
+}
+.admin{
+position:fixed;
+top:90px;
+right:20px;
+display:block !important;
+}
+}
+
+/* ── MOBILE ONLY ── */
+@media (max-width:768px){
+.mobile-menu-btns{
+display:flex;
+}
+.admin{
+position:static;
+width:100%;
+max-height:none;
+margin-bottom:20px;
+display:none;
+}
+.container{
+flex-direction:column;
+padding:10px;
+gap:10px;
+}
+.products{
+grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+}
+.cart{
+min-width:auto;
+}
+.logs-section{
+margin:15px 10px;
+padding:15px;
+}
+.logs-section h2{
+font-size:16px;
+}
+.logs-table{
+font-size:11px;
+}
+.logs-table th,
+.logs-table td{
+padding:6px 8px;
+}
+}
 </style>
 </head>
 <body>
 <header>
-Smart Coupon Store Pro
-<button class="toggle-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+<span>Smart Coupon Store Pro</span>
+<div class="mobile-menu-btns">
+<button onclick="openModal('adminModal')">⚙️ Admin</button>
+<button onclick="openModal('productModal')">🧪 Product</button>
+</div>
+<button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark</button>
 </header>
+
 <div class="container">
 <div class="products" id="products"></div>
 <div class="cart">
@@ -291,10 +418,10 @@ Smart Coupon Store Pro
 <button class="admin-minimize-btn" onclick="toggleLogs()" id="logsMinBtn">−</button>
 </h2>
 <div id="logsContent" style="display:block;">
-<p class="logs-meta">Showing the last 20 purchases — auto-refreshes every 5 seconds. <span id="logsLastUpdated"></span></p>
+<p class="logs-meta">Showing the last 20 purchases — auto-refreshes every 5 seconds.</p>
 <div class="logs-actions">
-<a class="logs-btn logs-btn-csv" href="/logs" download>⬇ Download CSV</a>
-<a class="logs-btn logs-btn-txt" href="/logs-txt" download>⬇ Download TXT</a>
+<a class="logs-btn logs-btn-csv" href="/logs" download>⬇ CSV</a>
+<a class="logs-btn logs-btn-txt" href="/logs-txt" download>⬇ TXT</a>
 <span class="logs-refresh-indicator" id="logsRefreshIndicator">🔄 Refreshing…</span>
 </div>
 <div class="logs-table-wrap">
@@ -304,9 +431,9 @@ Smart Coupon Store Pro
 <th>Timestamp</th>
 <th>Customer</th>
 <th>Items</th>
-<th>Original Total</th>
+<th>Original</th>
 <th>Discount</th>
-<th>Final Price</th>
+<th>Final</th>
 </tr>
 </thead>
 <tbody id="logsTableBody">
@@ -318,7 +445,7 @@ Smart Coupon Store Pro
 </div>
 </div>
 
-<!-- ADMIN PANEL -->
+<!-- ADMIN PANEL (DESKTOP) -->
 <div class="admin" id="adminPanel">
 <div class="admin-header">
 <span>⚙️ Admin Controls</span>
@@ -366,7 +493,7 @@ Max $ Cap
 </div>
 </div>
 
-<!-- PRODUCT SIMULATOR -->
+<!-- PRODUCT SIMULATOR (DESKTOP) -->
 <div class="admin" id="productPanel" style="top:330px;">
 <div class="admin-header">
 <span>🧪 Product Simulator</span>
@@ -383,6 +510,66 @@ Cost
 <input type="number" id="productCost">
 <button onclick="updateProduct()">Update Product</button>
 </div>
+</div>
+
+<!-- MOBILE MODALS -->
+<div class="modal-overlay" id="adminOverlay" onclick="closeModal('adminModal')"></div>
+<div class="modal-panel" id="adminModal">
+<button class="modal-close-btn" onclick="closeModal('adminModal')">✕ Close</button>
+<h3>⚙️ Admin Controls</h3>
+Days Inactive
+<input type="number" id="daysInactive-mobile">
+
+<h4>Psych Score Builder</h4>
+<label>CRn – Coupon Redemption Rate</label>
+<input type="number" id="CRn-mobile" step="0.01" min="0" max="1" placeholder="0-1">
+<label>DCn – Discount Click Rate</label>
+<input type="number" id="DCn-mobile" step="0.01" min="0" max="1" placeholder="0-1">
+<label>ABn – Cart Recovery After Discount</label>
+<input type="number" id="ABn-mobile" step="0.01" min="0" max="1" placeholder="0-1">
+<div class="result" id="psychPreview-mobile">
+Psych Score: 0.00
+</div>
+
+<hr>
+<strong>Loyalty Score Builder</strong>
+<label>Purchases / Max</label>
+<div class="flex-inputs">
+ <input type="number" id="loyPurchases-mobile" placeholder="Val">
+ <input type="number" id="maxPurchases-mobile" placeholder="Max">
+</div>
+<label>Spending / Max</label>
+<div class="flex-inputs">
+ <input type="number" id="loySpend-mobile" placeholder="Val">
+ <input type="number" id="maxSpend-mobile" placeholder="Max">
+</div>
+<label>Months / Max</label>
+<div class="flex-inputs">
+ <input type="number" id="loyMonths-mobile" placeholder="Val">
+ <input type="number" id="maxMonths-mobile" placeholder="Max">
+</div>
+<div class="result" id="loyaltyDisplay-mobile">Loyalty Score: 0.00</div>
+
+Max % Cap
+<input type="number" id="capPercent-mobile">
+Max $ Cap
+<input type="number" id="capDollar-mobile">
+<button onclick="updateAdminMobile()">Update</button>
+</div>
+
+<div class="modal-overlay" id="productOverlay" onclick="closeModal('productModal')"></div>
+<div class="modal-panel" id="productModal">
+<button class="modal-close-btn" onclick="closeModal('productModal')">✕ Close</button>
+<h3>🧪 Product Simulator</h3>
+Product ID
+<input type="number" id="productId-mobile">
+Name
+<input type="text" id="productName-mobile">
+Price
+<input type="number" id="productPrice-mobile">
+Cost
+<input type="number" id="productCost-mobile">
+<button onclick="updateProductMobile()">Update Product</button>
 </div>
 
 <script>
@@ -402,7 +589,6 @@ lastLogin:new Date(Date.now()-10*24*60*60*1000),
 loyalty:2,
 psych:0.5
 };
-// Track session start time
 let sessionStartTime = Date.now();
 const products={
 1:{name:"Laptop",price:1000,cost:750},
@@ -413,6 +599,7 @@ const products={
 6:{name:"Gaming Mouse",price:80,cost:40}
 };
 let cart={};
+
 function renderProducts(){
 let div=document.getElementById("products");
 div.innerHTML="";
@@ -426,6 +613,7 @@ div.innerHTML+=`
 </div>`;
 }
 }
+
 function addToCart(id){
 if(!cart[id])
 cart[id]={...products[id],quantity:1};
@@ -433,12 +621,14 @@ else
 cart[id].quantity++;
 updateCart();
 }
+
 function removeItem(id){
 cart[id].quantity--;
 if(cart[id].quantity<=0)
 delete cart[id];
 updateCart();
 }
+
 function updateCart(){
 let div=document.getElementById("cartItems");
 div.innerHTML="";
@@ -453,26 +643,21 @@ div.innerHTML+=`${item.name} x${item.quantity} - $${sub.toFixed(2)}
 document.getElementById("total").innerText=total.toFixed(2);
 updateLiveMetrics(total);
 }
+
 function calculateCoupon(price,cost,daysInactive){
 price = Number(price);
 cost = Number(cost);
-// Minimum profit requirement
 let minProfit = price * settings.MIN_PROFIT_MARGIN;
-// Lowest allowed price
 let minimumFinalPrice = cost + minProfit;
-// Max discount allowed
 let maxDiscountAllowed = price - minimumFinalPrice;
 if(maxDiscountAllowed <= 0){
 return [0,0,0];
 }
-// Behavioral weights
 let timeFactor = Math.min(daysInactive/settings.T,1) * settings.W1;
 let loyaltyFactor = Math.min(user.loyalty/settings.L_MAX,1) * settings.W2;
 let psychFactor = Math.min(user.psych/settings.S_MAX,1) * settings.W3;
 let BW = Math.min(timeFactor + loyaltyFactor + psychFactor,1);
-// Desired discount
 let desiredDiscount = maxDiscountAllowed * BW;
-// Caps
 let percentCap = settings.CAP_PERCENT ? price * settings.CAP_PERCENT : price;
 let dollarCap = settings.CAP_DOLLAR ? settings.CAP_DOLLAR : price;
 let finalDiscount = Math.min(
@@ -481,7 +666,6 @@ maxDiscountAllowed,
 percentCap,
 dollarCap
 );
-// Safety floor
 let finalPrice = price - finalDiscount;
 if(finalPrice < minimumFinalPrice){
 finalPrice = minimumFinalPrice;
@@ -489,6 +673,7 @@ finalDiscount = price - finalPrice;
 }
 return [finalDiscount,maxDiscountAllowed,BW];
 }
+
 function updateLiveMetrics(totalPrice){
 if(totalPrice===0){
 document.getElementById("weightBar").style.width="0%";
@@ -507,6 +692,7 @@ Estimated Discount: $${discount.toFixed(2)}<br>
 Estimated Final: $${(totalPrice-discount).toFixed(2)}
 </div>`;
 }
+
 function checkout(){
 let totalPrice=0;
 let totalCost=0;
@@ -523,9 +709,7 @@ return;
 let daysInactive=Math.floor((Date.now()-user.lastLogin)/(1000*60*60*24));
 let[discount,maxDiscount,BW]=calculateCoupon(totalPrice,totalCost,daysInactive);
 let finalPrice=totalPrice-discount;
-// Calculate session duration in seconds
 let sessionDuration = Math.round((Date.now() - sessionStartTime) / 1000);
-// Send checkout data to server
 let checkoutData = {
 user: "Customer_" + Math.random().toString(36).substr(2, 9),
 items: itemsList.join(", "),
@@ -556,43 +740,33 @@ user.loyalty++;
 user.lastLogin=new Date();
 }
 
-// ── Psych Score Calculation Function ──
-function calculatePsychScore(){
-let CRn = parseFloat(document.getElementById("CRn").value) || 0;
-let DCn = parseFloat(document.getElementById("DCn").value) || 0;
-let ABn = parseFloat(document.getElementById("ABn").value) || 0;
-/*
-Psychological Responsiveness Model
-S = w1*CRn + w2*DCn + w3*ABn
-*/
+function calculatePsychScore(isMobile=false){
+let prefix = isMobile ? "-mobile" : "";
+let CRn = parseFloat(document.getElementById("CRn"+prefix).value) || 0;
+let DCn = parseFloat(document.getElementById("DCn"+prefix).value) || 0;
+let ABn = parseFloat(document.getElementById("ABn"+prefix).value) || 0;
 let w1 = 0.4;
 let w2 = 0.35;
 let w3 = 0.25;
 let S = (w1*CRn) + (w2*DCn) + (w3*ABn);
-/* keep score between 0 and 1 */
 S = Math.max(0, Math.min(1, S));
-document.getElementById("psychPreview").innerHTML =
+document.getElementById("psychPreview"+prefix).innerHTML =
 "Psych Score: " + S.toFixed(2);
 return S;
 }
 
-// ── Loyalty Score Calculation Function ──
-function calculateLoyaltyScore(){
-let p = parseFloat(document.getElementById("loyPurchases").value) || 0;
-let pMax = parseFloat(document.getElementById("maxPurchases").value) || 1;
-let s = parseFloat(document.getElementById("loySpend").value) || 0;
-let sMax = parseFloat(document.getElementById("maxSpend").value) || 1;
-let m = parseFloat(document.getElementById("loyMonths").value) || 0;
-let mMax = parseFloat(document.getElementById("maxMonths").value) || 1;
-/*
-Loyalty Score Model
-L = B1*(P/Pmax) + B2*(S/Smax) + B3*(M/Mmax)
-*/
+function calculateLoyaltyScore(isMobile=false){
+let prefix = isMobile ? "-mobile" : "";
+let p = parseFloat(document.getElementById("loyPurchases"+prefix).value) || 0;
+let pMax = parseFloat(document.getElementById("maxPurchases"+prefix).value) || 1;
+let s = parseFloat(document.getElementById("loySpend"+prefix).value) || 0;
+let sMax = parseFloat(document.getElementById("maxSpend"+prefix).value) || 1;
+let m = parseFloat(document.getElementById("loyMonths"+prefix).value) || 0;
+let mMax = parseFloat(document.getElementById("maxMonths"+prefix).value) || 1;
 const B1 = 0.33, B2 = 0.33, B3 = 0.34;
 let L = (B1 * (p / pMax)) + (B2 * (s / sMax)) + (B3 * (m / mMax));
-/* keep score between 0 and 1 */
 L = Math.max(0, Math.min(1, L));
-document.getElementById("loyaltyDisplay").innerHTML =
+document.getElementById("loyaltyDisplay"+prefix).innerHTML =
 "Loyalty Score: " + L.toFixed(2);
 return L;
 }
@@ -601,15 +775,27 @@ function updateAdmin(){
 let days=document.getElementById("daysInactive").value;
 if(days)
 user.lastLogin=new Date(Date.now()-days*24*60*60*1000);
-/* calculate psych score from builder */
-user.psych = calculatePsychScore();
-/* calculate loyalty score from builder */
-let loyaltyNormalized = calculateLoyaltyScore();
+user.psych = calculatePsychScore(false);
+let loyaltyNormalized = calculateLoyaltyScore(false);
 user.loyalty = loyaltyNormalized * settings.L_MAX;
 settings.CAP_PERCENT=parseFloat(document.getElementById("capPercent").value);
 settings.CAP_DOLLAR=parseFloat(document.getElementById("capDollar").value);
 localStorage.setItem("settings",JSON.stringify(settings));
 updateCart();
+}
+
+function updateAdminMobile(){
+let days=document.getElementById("daysInactive-mobile").value;
+if(days)
+user.lastLogin=new Date(Date.now()-days*24*60*60*1000);
+user.psych = calculatePsychScore(true);
+let loyaltyNormalized = calculateLoyaltyScore(true);
+user.loyalty = loyaltyNormalized * settings.L_MAX;
+settings.CAP_PERCENT=parseFloat(document.getElementById("capPercent-mobile").value);
+settings.CAP_DOLLAR=parseFloat(document.getElementById("capDollar-mobile").value);
+localStorage.setItem("settings",JSON.stringify(settings));
+updateCart();
+closeModal('adminModal');
 }
 
 function updateProduct(){
@@ -631,11 +817,32 @@ if(cost) products[id].cost=cost;
 renderProducts();
 updateCart();
 }
+
+function updateProductMobile(){
+let id=document.getElementById("productId-mobile").value;
+if(!products[id]){
+alert("Invalid Product ID");
+return;
+}
+let name=document.getElementById("productName-mobile").value;
+let price=parseFloat(document.getElementById("productPrice-mobile").value);
+let cost=parseFloat(document.getElementById("productCost-mobile").value);
+if(price && cost && price<=cost){
+alert("Price must be greater than cost");
+return;
+}
+if(name) products[id].name=name;
+if(price) products[id].price=price;
+if(cost) products[id].cost=cost;
+renderProducts();
+updateCart();
+closeModal('productModal');
+}
+
 function toggleDarkMode(){
 document.body.classList.toggle("dark");
 }
 
-// ── Minimize/Maximize Functions ──
 function toggleAdmin() {
   const content = document.getElementById("adminContent");
   const btn = document.getElementById("adminMinBtn");
@@ -672,19 +879,51 @@ function toggleLogs() {
   }
 }
 
-// ── Live Psych Score Updating ──
+function openModal(modalId){
+if(modalId === 'adminModal'){
+document.getElementById("adminOverlay").classList.add("active");
+document.getElementById("adminModal").classList.add("active");
+}else if(modalId === 'productModal'){
+document.getElementById("productOverlay").classList.add("active");
+document.getElementById("productModal").classList.add("active");
+}
+}
+
+function closeModal(modalId){
+if(modalId === 'adminModal'){
+document.getElementById("adminOverlay").classList.remove("active");
+document.getElementById("adminModal").classList.remove("active");
+}else if(modalId === 'productModal'){
+document.getElementById("productOverlay").classList.remove("active");
+document.getElementById("productModal").classList.remove("active");
+}
+}
+
 ["CRn","DCn","ABn"].forEach(id=>{
 let el=document.getElementById(id);
 if(el){
-el.addEventListener("input",calculatePsychScore);
+el.addEventListener("input",()=>calculatePsychScore(false));
 }
 });
 
-// ── Live Loyalty Score Updating ──
+["CRn-mobile","DCn-mobile","ABn-mobile"].forEach(id=>{
+let el=document.getElementById(id);
+if(el){
+el.addEventListener("input",()=>calculatePsychScore(true));
+}
+});
+
 ["loyPurchases","maxPurchases","loySpend","maxSpend","loyMonths","maxMonths"].forEach(id=>{
 let el=document.getElementById(id);
 if(el){
-el.addEventListener("input",calculateLoyaltyScore);
+el.addEventListener("input",()=>calculateLoyaltyScore(false));
+}
+});
+
+["loyPurchases-mobile","maxPurchases-mobile","loySpend-mobile","maxSpend-mobile","loyMonths-mobile","maxMonths-mobile"].forEach(id=>{
+let el=document.getElementById(id);
+if(el){
+el.addEventListener("input",()=>calculateLoyaltyScore(true));
 }
 });
 
@@ -712,8 +951,9 @@ document.onmouseup=null;
 document.onmousemove=null;
 }
 }
+
 renderProducts();
-// ── Purchase Logs: fetch from /logs-data and render table ──
+
 function formatTimestamp(ts) {
  if (!ts) return "";
  try {
@@ -722,7 +962,7 @@ function formatTimestamp(ts) {
  return d.toLocaleString();
  } catch(e) { return ts; }
 }
-// Column indices in the CSV we care about (by header name)
+
 const LOG_COLS = {
  timestamp: "Timestamp",
  customer: "Customer",
@@ -731,9 +971,11 @@ const LOG_COLS = {
  discount: "Discount",
  final: "Final Price"
 };
+
 function findColIndex(headers, name) {
  return headers.findIndex(h => h.trim().toLowerCase() === name.toLowerCase());
 }
+
 function renderLogsTable(data) {
  const tbody = document.getElementById("logsTableBody");
  const countEl = document.getElementById("logsCount");
@@ -772,6 +1014,7 @@ function renderLogsTable(data) {
  if (countEl) countEl.textContent = data.rows.length + " record(s) shown (most recent first).";
  if (indicator) indicator.textContent = "✔ Updated " + new Date().toLocaleTimeString();
 }
+
 function fetchLogs() {
  const indicator = document.getElementById("logsRefreshIndicator");
  if (indicator) indicator.textContent = "🔄 Refreshing...";
@@ -785,7 +1028,7 @@ function fetchLogs() {
  if (indicator) indicator.textContent = "⚠ Fetch failed";
  });
 }
-// Initial load + auto-refresh every 5 seconds
+
 fetchLogs();
 setInterval(fetchLogs, 5000);
 </script>
