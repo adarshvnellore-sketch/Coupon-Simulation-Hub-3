@@ -303,7 +303,7 @@ position:fixed;
 top:0;
 right:-100%;
 width:100%;
-max-width:400px;
+max-width:100%;
 height:100vh;
 background:var(--card);
 z-index:1001;
@@ -318,12 +318,81 @@ right:0;
 .modal-close-btn{
 background:var(--accent);
 border:none;
-padding:8px 12px;
+padding:10px 16px;
 cursor:pointer;
 font-weight:bold;
 border-radius:4px;
-margin-bottom:15px;
+margin-bottom:20px;
 width:100%;
+font-size:14px;
+}
+
+.modal-panel h3{
+margin:0 0 20px 0;
+font-size:20px;
+}
+
+.modal-panel label{
+display:block;
+font-weight:bold;
+margin-top:16px;
+margin-bottom:8px;
+font-size:14px;
+}
+
+.modal-panel input{
+width:100%;
+padding:10px;
+margin-bottom:12px;
+box-sizing:border-box;
+border:1px solid #ccc;
+border-radius:4px;
+font-size:14px;
+}
+
+.modal-panel .flex-inputs{
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.modal-panel .flex-inputs input{
+width:100%;
+}
+
+.modal-panel .result{
+margin-top:16px;
+background:rgba(0,150,255,.1);
+padding:12px;
+border-radius:6px;
+font-size:14px;
+}
+
+.modal-panel hr{
+margin:20px 0;
+border:none;
+border-top:1px solid #ccc;
+}
+
+.modal-panel strong{
+display:block;
+margin-top:20px;
+margin-bottom:12px;
+font-size:16px;
+font-weight:bold;
+}
+
+.modal-panel button[onclick*="updateAdmin"], 
+.modal-panel button[onclick*="updateProduct"]{
+background:var(--accent);
+border:none;
+padding:12px;
+cursor:pointer;
+font-weight:bold;
+border-radius:4px;
+width:100%;
+font-size:14px;
+margin-top:20px;
 }
 
 /* ── DESKTOP ONLY ── */
@@ -517,43 +586,54 @@ Cost
 <div class="modal-panel" id="adminModal">
 <button class="modal-close-btn" onclick="closeModal('adminModal')">✕ Close</button>
 <h3>⚙️ Admin Controls</h3>
-Days Inactive
+
+<label>Days Inactive</label>
 <input type="number" id="daysInactive-mobile">
 
-<h4>Psych Score Builder</h4>
+<h4 style="margin-top:20px; margin-bottom:12px;">Psych Score Builder</h4>
+
 <label>CRn – Coupon Redemption Rate</label>
 <input type="number" id="CRn-mobile" step="0.01" min="0" max="1" placeholder="0-1">
+
 <label>DCn – Discount Click Rate</label>
 <input type="number" id="DCn-mobile" step="0.01" min="0" max="1" placeholder="0-1">
+
 <label>ABn – Cart Recovery After Discount</label>
 <input type="number" id="ABn-mobile" step="0.01" min="0" max="1" placeholder="0-1">
+
 <div class="result" id="psychPreview-mobile">
 Psych Score: 0.00
 </div>
 
 <hr>
 <strong>Loyalty Score Builder</strong>
-<label>Purchases / Max</label>
-<div class="flex-inputs">
- <input type="number" id="loyPurchases-mobile" placeholder="Val">
- <input type="number" id="maxPurchases-mobile" placeholder="Max">
-</div>
-<label>Spending / Max</label>
-<div class="flex-inputs">
- <input type="number" id="loySpend-mobile" placeholder="Val">
- <input type="number" id="maxSpend-mobile" placeholder="Max">
-</div>
-<label>Months / Max</label>
-<div class="flex-inputs">
- <input type="number" id="loyMonths-mobile" placeholder="Val">
- <input type="number" id="maxMonths-mobile" placeholder="Max">
-</div>
+
+<label>Purchases Value</label>
+<input type="number" id="loyPurchases-mobile" placeholder="Enter value">
+
+<label>Max Purchases</label>
+<input type="number" id="maxPurchases-mobile" placeholder="Enter max">
+
+<label>Spending Value</label>
+<input type="number" id="loySpend-mobile" placeholder="Enter value">
+
+<label>Max Spending</label>
+<input type="number" id="maxSpend-mobile" placeholder="Enter max">
+
+<label>Months Value</label>
+<input type="number" id="loyMonths-mobile" placeholder="Enter value">
+
+<label>Max Months</label>
+<input type="number" id="maxMonths-mobile" placeholder="Enter max">
+
 <div class="result" id="loyaltyDisplay-mobile">Loyalty Score: 0.00</div>
 
-Max % Cap
+<label>Max % Cap</label>
 <input type="number" id="capPercent-mobile">
-Max $ Cap
+
+<label>Max $ Cap</label>
 <input type="number" id="capDollar-mobile">
+
 <button onclick="updateAdminMobile()">Update</button>
 </div>
 
@@ -561,14 +641,19 @@ Max $ Cap
 <div class="modal-panel" id="productModal">
 <button class="modal-close-btn" onclick="closeModal('productModal')">✕ Close</button>
 <h3>🧪 Product Simulator</h3>
-Product ID
+
+<label>Product ID</label>
 <input type="number" id="productId-mobile">
-Name
+
+<label>Name</label>
 <input type="text" id="productName-mobile">
-Price
+
+<label>Price</label>
 <input type="number" id="productPrice-mobile">
-Cost
+
+<label>Cost</label>
 <input type="number" id="productCost-mobile">
+
 <button onclick="updateProductMobile()">Update Product</button>
 </div>
 
