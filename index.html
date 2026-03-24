@@ -88,6 +88,8 @@ font-size:12px;
 width:240px;
 box-shadow:0 0 8px rgba(0,0,0,0.2);
 z-index:1000;
+overflow-y:auto;
+max-height:80vh;
 }
 .admin-header{
 cursor:move;
@@ -112,6 +114,32 @@ justify-content:center;
 .admin input{
 width:100%;
 margin-bottom:6px;
+box-sizing:border-box;
+}
+.admin label{
+display:block;
+font-weight:bold;
+margin-top:8px;
+margin-bottom:4px;
+font-size:11px;
+}
+.admin hr{
+margin:10px 0;
+border:none;
+border-top:1px solid #ccc;
+}
+.admin strong{
+display:block;
+margin-top:10px;
+margin-bottom:6px;
+font-size:12px;
+}
+.flex-inputs{
+display:flex;
+gap:5px;
+}
+.flex-inputs input{
+flex:1;
 }
 .weight-bar-container{
 background:#ccc;
@@ -299,8 +327,37 @@ Smart Coupon Store Pro
 <div id="adminContent" style="display:block;">
 Days Inactive
 <input type="number" id="daysInactive">
-Psych Score
-<input type="range" min="0" max="1" step="0.1" id="psychSlider">
+
+<h4>Psych Score Builder</h4>
+<label>CRn – Coupon Redemption Rate</label>
+<input type="number" id="CRn" step="0.01" min="0" max="1" placeholder="0-1">
+<label>DCn – Discount Click Rate</label>
+<input type="number" id="DCn" step="0.01" min="0" max="1" placeholder="0-1">
+<label>ABn – Cart Recovery After Discount</label>
+<input type="number" id="ABn" step="0.01" min="0" max="1" placeholder="0-1">
+<div class="result" id="psychPreview">
+Psych Score: 0.00
+</div>
+
+<hr>
+<strong>Loyalty Score Builder</strong>
+<label>Purchases / Max</label>
+<div class="flex-inputs">
+ <input type="number" id="loyPurchases" placeholder="Val">
+ <input type="number" id="maxPurchases" placeholder="Max">
+</div>
+<label>Spending / Max</label>
+<div class="flex-inputs">
+ <input type="number" id="loySpend" placeholder="Val">
+ <input type="number" id="maxSpend" placeholder="Max">
+</div>
+<label>Months / Max</label>
+<div class="flex-inputs">
+ <input type="number" id="loyMonths" placeholder="Val">
+ <input type="number" id="maxMonths" placeholder="Max">
+</div>
+<div class="result" id="loyaltyDisplay">Loyalty Score: 0.00</div>
+
 Max % Cap
 <input type="number" id="capPercent">
 Max $ Cap
@@ -498,16 +555,63 @@ updateCart();
 user.loyalty++;
 user.lastLogin=new Date();
 }
+
+// ── Psych Score Calculation Function ──
+function calculatePsychScore(){
+let CRn = parseFloat(document.getElementById("CRn").value) || 0;
+let DCn = parseFloat(document.getElementById("DCn").value) || 0;
+let ABn = parseFloat(document.getElementById("ABn").value) || 0;
+/*
+Psychological Responsiveness Model
+S = w1*CRn + w2*DCn + w3*ABn
+*/
+let w1 = 0.4;
+let w2 = 0.35;
+let w3 = 0.25;
+let S = (w1*CRn) + (w2*DCn) + (w3*ABn);
+/* keep score between 0 and 1 */
+S = Math.max(0, Math.min(1, S));
+document.getElementById("psychPreview").innerHTML =
+"Psych Score: " + S.toFixed(2);
+return S;
+}
+
+// ── Loyalty Score Calculation Function ──
+function calculateLoyaltyScore(){
+let p = parseFloat(document.getElementById("loyPurchases").value) || 0;
+let pMax = parseFloat(document.getElementById("maxPurchases").value) || 1;
+let s = parseFloat(document.getElementById("loySpend").value) || 0;
+let sMax = parseFloat(document.getElementById("maxSpend").value) || 1;
+let m = parseFloat(document.getElementById("loyMonths").value) || 0;
+let mMax = parseFloat(document.getElementById("maxMonths").value) || 1;
+/*
+Loyalty Score Model
+L = B1*(P/Pmax) + B2*(S/Smax) + B3*(M/Mmax)
+*/
+const B1 = 0.33, B2 = 0.33, B3 = 0.34;
+let L = (B1 * (p / pMax)) + (B2 * (s / sMax)) + (B3 * (m / mMax));
+/* keep score between 0 and 1 */
+L = Math.max(0, Math.min(1, L));
+document.getElementById("loyaltyDisplay").innerHTML =
+"Loyalty Score: " + L.toFixed(2);
+return L;
+}
+
 function updateAdmin(){
 let days=document.getElementById("daysInactive").value;
 if(days)
 user.lastLogin=new Date(Date.now()-days*24*60*60*1000);
-user.psych=parseFloat(document.getElementById("psychSlider").value);
+/* calculate psych score from builder */
+user.psych = calculatePsychScore();
+/* calculate loyalty score from builder */
+let loyaltyNormalized = calculateLoyaltyScore();
+user.loyalty = loyaltyNormalized * settings.L_MAX;
 settings.CAP_PERCENT=parseFloat(document.getElementById("capPercent").value);
 settings.CAP_DOLLAR=parseFloat(document.getElementById("capDollar").value);
 localStorage.setItem("settings",JSON.stringify(settings));
 updateCart();
 }
+
 function updateProduct(){
 let id=document.getElementById("productId").value;
 if(!products[id]){
@@ -567,6 +671,22 @@ function toggleLogs() {
     btn.textContent = "+";
   }
 }
+
+// ── Live Psych Score Updating ──
+["CRn","DCn","ABn"].forEach(id=>{
+let el=document.getElementById(id);
+if(el){
+el.addEventListener("input",calculatePsychScore);
+}
+});
+
+// ── Live Loyalty Score Updating ──
+["loyPurchases","maxPurchases","loySpend","maxSpend","loyMonths","maxMonths"].forEach(id=>{
+let el=document.getElementById(id);
+if(el){
+el.addEventListener("input",calculateLoyaltyScore);
+}
+});
 
 dragElement(document.getElementById("adminPanel"));
 dragElement(document.getElementById("productPanel"));
